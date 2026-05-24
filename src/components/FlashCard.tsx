@@ -27,11 +27,19 @@ const FlashCard: FC<FlashCardProps> = ({ category }) => {
     }
   };
 
-  const getRandom = () => {
+  const getNext = (step: number = 1) => {
     let key: number;
-    do {
-      key = Math.floor(Math.random() * letters.length);
-    } while (key === lastKey);
+    if (category === 'number') {
+      if (lastKey === null) {
+        key = step > 0 ? 0 : letters.length - 1;
+      } else {
+        key = (lastKey + step + letters.length) % letters.length;
+      }
+    } else {
+      do {
+        key = Math.floor(Math.random() * letters.length);
+      } while (key === lastKey);
+    }
 
     dispatch(setCategory(category))
     dispatch(setLetter(letters[key]))
@@ -42,34 +50,34 @@ const FlashCard: FC<FlashCardProps> = ({ category }) => {
   const letters = getLetters(category);
 
   useEffect(() => {
-    getRandom();
+    getNext();
   }, []);
 
   const swipeHandler = useSwipeable({
     onSwiped: (eventData) => {
       const { deltaX } = eventData;
       if (deltaX > 0) {
-        setSwipeDirection('right'); // Swiping right
+        setSwipeDirection('right');
+        changeCard(-1);
       } else {
-        setSwipeDirection('left'); // Swiping left
+        setSwipeDirection('left');
+        changeCard(1);
       }
-
-      changeCard();
     },
   });
 
-  const changeCard = () => {
+  const changeCard = (step?: number) => {
     setIsSwiping(true);
     setTimeout(() => {
-      getRandom();
+      getNext(step);
       setIsSwiping(false);
-      setSwipeDirection(null); // Reset swipe direction
-    }, 100); // Match the CSS transition duration
+      setSwipeDirection(null);
+    }, 100);
   }
 
   const handleNext = () => {
     setSwipeDirection('right');
-    changeCard();
+    changeCard(1);
   }
 
   if (letter === null) {
