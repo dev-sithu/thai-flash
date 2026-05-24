@@ -3,7 +3,7 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 const initialState: CardState = {
   letter: null,
   category: '',
-  lastKey: 0,
+  lastKey: -1,
   pronunciation : false,
   playing: false,
 }
